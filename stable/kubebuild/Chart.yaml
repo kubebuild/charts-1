@@ -1,0 +1,14 @@
+apiVersion: v1
+appVersion: "1.0"
+description: KubeBuild Chart for provisioning agents for https://www.kubebuild.com
+name: kubebuild
+version: 0.5.5
+keywords:
+- kubebuild
+- ci
+home: https://github.com/kubebuild
+sources:
+- https://github.com/kubebuild/charts
+maintainers:
+- name: andreimc
+  email: lusu777@gmail.com

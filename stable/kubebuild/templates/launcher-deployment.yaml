@@ -1,0 +1,48 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: "{{ template "kubebuild.fullname" . }}-launcher"
+  labels:
+    chart: {{ template "kubebuild.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 100%
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: "{{ template "kubebuild.name" . }}-launcher"
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "kubebuild.name" . }}-launcher
+        release: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ template "kubebuild.fullname" . }}-launcher
+      containers:
+        - name: "{{ .Chart.Name }}-launcher"
+          image: "{{ .Values.launcherImage.repository }}:{{ .Values.launcherImage.tag }}"
+          args: {{ .Values.launcherApp.args }}
+          imagePullPolicy: {{ .Values.launcherImage.pullPolicy }}
+          envFrom:
+          - configMapRef:
+              name: "{{ template "kubebuild.fullname" . }}-launcher"
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
